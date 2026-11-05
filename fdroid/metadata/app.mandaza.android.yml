@@ -1,0 +1,35 @@
+Categories:
+  - Graphics
+  - Clock
+License: MIT
+AuthorName: Luke Steuber
+AuthorWebSite: https://lukesteuber.com/
+WebSite: https://mandaza.app/
+SourceCode: https://github.com/lukeslp/mandaza-android
+IssueTracker: https://github.com/lukeslp/mandaza-android/issues
+
+AutoName: Mandaza
+
+RepoType: git
+Repo: https://github.com/lukeslp/mandaza-android.git
+
+Builds:
+  - versionName: 1.3.6
+    versionCode: 10311
+    disable: Build template only; official catalog recipe is maintained in fdroiddata
+    commit: fdroid-v1.3.6
+    subdir: android/app
+    gradle:
+      - fdroid
+    prebuild: python3 ../../fdroid/prepare-build.py --confirm-build-sandbox
+
+MaintainerNotes: |-
+  Source-release build template, not the authoritative fdroiddata recipe.
+  The upstream F-Droid release uses the established direct-download signer.
+  The fdroid flavor has no direct updater, Play Review or Internet permission.
+  Phone/tablet only. Wear and TV are independent release tracks.
+
+AutoUpdateMode: None
+UpdateCheckMode: None
+CurrentVersion: 1.3.6
+CurrentVersionCode: 10311
