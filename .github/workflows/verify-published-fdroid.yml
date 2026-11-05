@@ -1,0 +1,73 @@
+name: Verify published F-Droid release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Published Android release tag
+        required: true
+        default: fdroid-v1.3.6
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  reproduce:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      RELEASE_TAG: ${{ inputs.tag }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          path: verifier
+          persist-credentials: false
+      - name: Fetch published receipt for a validated release tag
+        run: |
+          python3 - <<'PY'
+          import os, re, urllib.request
+          from pathlib import Path
+          tag = os.environ['RELEASE_TAG']
+          assert re.fullmatch(r'fdroid-v\d+\.\d+\.\d+', tag), 'Invalid release tag'
+          url = 'https://github.com/lukeslp/mandaza-android/releases/download/' + tag + '/REPRODUCIBILITY.json'
+          with urllib.request.urlopen(url, timeout=30) as response:
+              Path('REPRODUCIBILITY.json').write_bytes(response.read())
+          PY
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.tag }}
+          path: release-source
+          persist-credentials: false
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
+          log-accepted-android-sdk-licenses: false
+      - name: Test the comparison gate and prepare disposable source
+        run: |
+          python3 -m unittest discover -s verifier/fdroid -p 'test_reproduction.py' -v
+          python3 release-source/fdroid/prepare-build.py --confirm-build-sandbox
+      - name: Build and validate the pinned release
+        working-directory: release-source/android
+        run: |
+          ./gradlew --no-daemon --console=plain :core:testDebugUnitTest :app:testFdroidDebugUnitTest :app:lintFdroidRelease :app:assembleFdroidRelease
+          ./gradlew --no-daemon --console=plain :app:dependencies --configuration fdroidReleaseRuntimeClasspath > fdroid-dependencies.txt
+          "$ANDROID_HOME/cmdline-tools/latest/bin/apkanalyzer" dex packages --defined-only app/build/outputs/apk/fdroid/release/app-fdroid-release-unsigned.apk > fdroid-classes.txt
+          python3 ../fdroid/verify-apk.py app/build/outputs/apk/fdroid/release/app-fdroid-release-unsigned.apk --dependencies fdroid-dependencies.txt --classes fdroid-classes.txt --build-tools "$ANDROID_HOME/build-tools/36.0.0" > fdroid-verification.json
+      - name: Require exact source and unsigned APK match
+        run: |
+          python3 verifier/fdroid/verify-reproduction.py --receipt REPRODUCIBILITY.json --source release-source --tag "$RELEASE_TAG" --apk release-source/android/app/build/outputs/apk/fdroid/release/app-fdroid-release-unsigned.apk > reproduction-verification.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: published-fdroid-reproduction
+          path: |
+            REPRODUCIBILITY.json
+            reproduction-verification.json
+            release-source/android/fdroid-verification.json
+            release-source/android/app/build/outputs/apk/fdroid/release/*.apk
+          if-no-files-found: warn

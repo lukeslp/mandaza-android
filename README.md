@@ -19,8 +19,10 @@ cd android
 
 The preparation removes unused store-only sources/declarations. The release is
 unsigned without private signing variables. The upstream F-Droid APK is signed
-with Mandaza's existing direct-download identity; F-Droid reproduces the build
-and copies those signatures. Play App Signing compatibility is not assumed.
+with Mandaza's existing direct-download identity. The proposed catalog recipe
+asks F-Droid to rebuild it and verify the upstream signatures before publication.
+Official builder acceptance remains pending. Play App Signing compatibility is
+not assumed.
 The catalog build recipe is maintained in fdroiddata; the disabled recipe in
 this source tree is a version/build template, not an official catalog listing.
 
@@ -37,3 +39,13 @@ This export contains complete Android build inputs without private Git history,
 Apple/TV/Wear build configurations, signing material or local machine settings.
 `SOURCE_EXPORT.json` records the source revision, transformations and hashes.
 Author: [Luke Steuber](https://lukesteuber.com/).
+
+## Release checks
+
+[Release verification](docs/RELEASE_VERIFICATION.md) separates upstream build
+checks, physical-device results and official catalog acceptance. The manual
+`Verify published F-Droid release` workflow rebuilds a selected published tag and
+fails unless its exact source commit and unsigned APK match that release's
+`REPRODUCIBILITY.json`. It uses no release credentials. Published tags and release
+assets remain unchanged. `SOURCE_EXPORT.json` records the original export; later
+maintenance is recorded in this repository's Git history.
