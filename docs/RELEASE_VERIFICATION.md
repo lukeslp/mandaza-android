@@ -14,7 +14,9 @@ The repeatable `Verify published F-Droid release` workflow checks out the
 selected release tag, runs its build/tests/lint/APK verifier, and compares its
 source commit and unsigned APK with the published receipt. The comparison gate
 rejects a different source revision, tag or APK digest. It retains a JSON result
-and the unsigned APK. This is an upstream check; F-Droid runs its own builder.
+and the unsigned APK. [Run 42118994931](https://github.com/lukeslp/mandaza-android/actions/runs/42118994931)
+passed these checks on November 5. This is an upstream check; F-Droid runs its
+own builder.
 
 On November 5, the exact signed APK with SHA-256
 `db95b1c95edeedd9426102a0ebebdf394985bace0df28e3231946dc47651425e`
