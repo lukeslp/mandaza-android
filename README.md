@@ -1,5 +1,9 @@
 # Mandaza for Android
 
+[![Android download](https://img.shields.io/badge/Android-direct_download-34A853?style=flat-square)](https://dr.eamer.dev/downloads/apps/mandaza/)
+[![F-Droid repository](https://img.shields.io/badge/F--Droid-LocalType_releases_repo-1976D2?style=flat-square)](https://dr.eamer.dev/downloads/fdroid/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
+
 **Development has moved to [lukeslp/mandaza](https://github.com/lukeslp/mandaza).**
 That repository holds the full history for the Android, iOS, tvOS and watch
 apps. This one is an Android-only export I published on November 5, 2026. It
