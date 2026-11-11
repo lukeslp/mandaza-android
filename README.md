@@ -1,5 +1,12 @@
 # Mandaza for Android
 
+**Development has moved to [lukeslp/mandaza](https://github.com/lukeslp/mandaza).**
+That repository holds the full history for the Android, iOS, tvOS and watch
+apps. This one is an Android-only export I published on November 5, 2026. It
+matches commit `7f02e17fb007f08b5ee477d9f1fe003910f3d134` there, and the
+`fdroid-v1.3.6` release in both places carries the same signed APK. Please open
+issues in the main repository.
+
 Animated hexagonal art, favorites, PNG export and a customizable ambient clock.
 This source release covers the native phone/tablet app and core engine.
 The F-Droid flavor is entirely on-device, with no account, analytics, direct
